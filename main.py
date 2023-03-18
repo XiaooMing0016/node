@@ -39,7 +39,7 @@ async def task(ip, task_id: str, node_id: str, task_priority: str, task_type_nam
     logger.info(f"Task {task_id} on node {node_id} is running")
     for i in range(125):
         if _tasks[task_id][node_id]['task_status'] == 'stop':
-            asyncio.Task.current_task().cancelled()
+            asyncio.Task.current_task().cancel()
             logger.info(f"Task {task_id} on node {node_id} is stopped")
             break
         try: 
