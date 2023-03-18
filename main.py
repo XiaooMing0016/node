@@ -104,6 +104,7 @@ async def unregister_node(token: str):
 async def init_task(request: Request, task_type_name: str, task_id: str, node_id: str, task_name: str, priority: str):
     if task_id not in _tasks:
         logger.info(f"Received task {task_id}，start task")
+        _tasks[task_id] = {}
         _tasks[task_id][node_id] = {"task_id": task_id, "task_node": node_id,
                                     "task_name": task_name, "task_type_name": task_type_name,
                                     "task_priority": priority, "task_status": "created",
