@@ -111,7 +111,7 @@ async def init_task(request: Request, task_type_name: str, task_id: str, node_id
                                     "task_priority": priority, "task_status": "created",
                                     "creat_time": (time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))}
         # 启用协程，启动任务
-        asyncio.create_task(task(request.client.host, task_id, str[i], priority, task_type_name))
+        asyncio.create_task(task(request.client.host, task_id, node_id, priority, task_type_name))
         # 将任务信息写入json文件
         with open('tasks.json', 'w') as f:
             json.dump(_tasks, f)
