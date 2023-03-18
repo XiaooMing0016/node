@@ -144,7 +144,6 @@ async def get_task_status(task_id: str):
 async def stop_task(task_id: str):
     if task_id in _tasks:
         _tasks[task_id]["task_status"] = "stop"
-        _tasks[task_id][node_id]["task"].cancel()
         return {"message": "stop task successfully"}
     else:
         return {'message': 'task_id does not exist'}
