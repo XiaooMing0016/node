@@ -46,7 +46,7 @@ async def task(ip, task_id: str, node_id: str, task_priority: str, task_type_nam
     logger.info(f"Task {task_id} on node {node_id} is completed")
     # 任务完成后，将任务状态改为已完成
     try:
-        response = requests.get(f"{ip}/task/finish/{task_id}/{node_id}")
+        response = requests.get(f"http://{ip}/task/finish/{task_id}/{node_id}")
         if response.status_code == 200:
             logger.info(f"Task {task_id} on node {node_id} is completed")
         else:
