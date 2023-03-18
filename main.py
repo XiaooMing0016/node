@@ -34,18 +34,18 @@ _tasks: Dict[str, Dict] = {
 
 
 # 协程任务
-async def task(ip, task_id: str, node_id: str, task_priority: str, task_type_name: str):
+async def task(ip, task_id: str, node_id: str, task_priority: str, task_type_name: str, count: int):
     logger.info(f"Start task {task_id} {task_type_name} on node {node_id}")
     logger.info(f"Task {task_id} on node {node_id} is running")
-    for i in range(125):
+    for i in range(count):
         if _tasks[task_id][node_id]['task_status'] == 'stop':
             asyncio.Task.current_task().cancel()
             logger.info(f"Task {task_id} on node {node_id} is stopped")
             break
         try: 
-            response = requests.get(f"http://{ip}/task/process/{task_id}/{node_id}/{i}")
+            response = requests.get(f"http://{ip}/task/process/{task_id}/{node_id}/{i}/{count}")
             if response.status_code == 200:
-                logger.info(f"Task {task_id} on node {node_id} is processing, number {str(i)}, total 125, "
+                logger.info(f"Task {task_id} on node {node_id} is processing, number {str(i)}, total {count}, "
                             f"progress {str(i / 125 * 100)}%, priority {task_priority}")
             else:
                 logger.error(f"Task {task_id} on node {node_id} is failed")
@@ -110,8 +110,9 @@ async def unregister_node(token: str):
 
 
 # 创建任务
-@app.get("/task/init/{task_type_name}/{task_id}/{node_id}/{task_name}/{priority}")
-async def init_task(request: Request, task_type_name: str, task_id: str, node_id: str, task_name: str, priority: str):
+@app.get("/task/init/{task_type_name}/{task_id}/{node_id}/{task_name}/{priority}/{count}")
+async def init_task(request: Request, task_type_name: str, task_id: str, node_id: str, task_name: str, priority: str,
+                    count: int):
     if task_id not in _tasks:
         logger.info(f"Received task {task_id}，start task")
         _tasks[task_id] = {}
@@ -120,7 +121,7 @@ async def init_task(request: Request, task_type_name: str, task_id: str, node_id
                                     "task_priority": priority, "task_status": "created",
                                     "creat_time": (time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))}
         # 启用协程，启动任务
-        asyncio.ensure_future(task(request.client.host, task_id, node_id, priority, task_type_name))
+        asyncio.ensure_future(task(request.client.host, task_id, node_id, priority, task_type_name, count))
         # 将任务信息写入json文件
         with open('tasks.json', 'w') as f:
             json.dump(_tasks, f)
