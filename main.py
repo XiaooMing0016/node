@@ -39,6 +39,7 @@ async def task(ip, task_id: str, node_id: str, task_priority: str, task_type_nam
     logger.info(f"Task {task_id} on node {node_id} is running")
     for i in range(125):
         if _tasks[task_id][node_id]['task_status'] == 'stop':
+            asyncio.Task.current_task().cancelled()
             logger.info(f"Task {task_id} on node {node_id} is stopped")
             break
         try: 
@@ -119,7 +120,7 @@ async def init_task(request: Request, task_type_name: str, task_id: str, node_id
                                     "task_priority": priority, "task_status": "created",
                                     "creat_time": (time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))}
         # 启用协程，启动任务
-        _tasks[task_id][node_id] = {"task", asyncio.create_task(task(request.client.host, task_id, node_id, priority, task_type_name))}
+        asyncio.ensure_future(task(request.client.host, task_id, node_id, priority, task_type_name))
         # 将任务信息写入json文件
         with open('tasks.json', 'w') as f:
             json.dump(_tasks, f)
