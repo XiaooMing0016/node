@@ -46,7 +46,7 @@ async def task(ip, task_id: str, node_id: str, task_priority: str, task_type_nam
             response = requests.get(f"http://{ip}/task/process/{task_id}/{node_id}/{i}/{count}")
             if response.status_code == 200:
                 logger.info(f"Task {task_id} on node {node_id} is processing, number {str(i)}, total {count}, "
-                            f"progress {str(i / int(count) * 100)[:3]}%, priority {task_priority}")
+                            f"progress {str(i / int(count) * 100)[:4]}%, priority {task_priority}")
             else:
                 logger.error(f"Task {task_id} on node {node_id} is failed")
         except Exception as e:
