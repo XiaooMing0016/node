@@ -46,14 +46,15 @@ async def task(ip, task_id: str, node_id: str, task_priority: str, task_type_nam
             response = requests.get(f"http://{ip}/task/process/{task_id}/{node_id}/{i}/{count}")
             if response.status_code == 200:
                 logger.info(f"Task {task_id} on node {node_id} is processing, number {str(i)}, total {count}, "
-                            f"progress {str(i / 125 * 100)}%, priority {task_priority}")
+                            f"progress {str(i / int(count) * 100)[:3]}%, priority {task_priority}")
             else:
                 logger.error(f"Task {task_id} on node {node_id} is failed")
         except Exception as e:
             logger.info(f"Task {task_id} on node {node_id} is failed: {e}")
         # 随机等待3~5秒
         await asyncio.sleep(random.randint(3, 5))
-    logger.info(f"Task {task_id} on node {node_id} is completed")
+    logger.info(f"Task {task_id} on node {node_id} is processing, number {str(i)}, total {count}, "
+                f"progress {str(i / 125 * 100)}%, priority {task_priority}")
     # 任务完成后，将任务状态改为已完成
     try:
         response = requests.get(f"http://{ip}/task/finish/{task_id}/{node_id}")
