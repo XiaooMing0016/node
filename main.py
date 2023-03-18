@@ -38,8 +38,15 @@ async def task(ip, task_id: str, node_id: str, task_priority: str, task_type_nam
     logger.info(f"Start task {task_id} {task_type_name} on node {node_id}")
     logger.info(f"Task {task_id} on node {node_id} is running")
     for i in range(125):
-        logger.info(f"Task {task_id} on node {node_id} is processing, number {str(i)}, total 125, "
-                    f"progress {str(i / 125 * 100)}%, priority {task_priority}")
+        try: 
+            response = requests.get(f"http://{ip}/task/process/{task_id}/{node_id}/{i}")
+            if response.status_code == 200:
+                logger.info(f"Task {task_id} on node {node_id} is processing, number {str(i)}, total 125, "
+                            f"progress {str(i / 125 * 100)}%, priority {task_priority}")
+            else:
+                logger.error(f"Task {task_id} on node {node_id} is failed")
+        except Exception as e:
+            logger.info(f"Task {task_id} on node {node_id} is failed: {e}")
         # 随机等待3~5秒
         await asyncio.sleep(random.randint(3, 5))
         if _tasks[task_id][node_id]['task_status'] == 'stop':
