@@ -104,10 +104,10 @@ async def unregister_node(token: str):
 async def init_task(request: Request, task_type_name: str, task_id: str, node_id: str, task_name: str, priority: str):
     if task_id not in _tasks:
         logger.info(f"Received task {task_id}，start task")
-        _tasks[task_id][str[i]] = {"task_id": task_id, "task_node": str[i],
-                                   "task_name": task_name, "task_type_name": task_type_name,
-                                   "task_priority": priority, "task_status": "created",
-                                   "creat_time": (time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))}
+        _tasks[task_id][node_id] = {"task_id": task_id, "task_node": node_id,
+                                    "task_name": task_name, "task_type_name": task_type_name,
+                                    "task_priority": priority, "task_status": "created",
+                                    "creat_time": (time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))}
         # 启用协程，启动任务
         asyncio.create_task(task(request.client.host, task_id, str[i], priority, task_type_name))
         # 将任务信息写入json文件
